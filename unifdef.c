@@ -817,7 +817,8 @@ parseline(void)
 		}
 	} else if ((cp = matchsym("if", keyword)) != NULL)
 		retval = ifeval(&cp);
-	else if ((cp = matchsym("elif", keyword)) != NULL)
+	// else if ((cp = matchsym("elif", keyword)) != NULL)
+	else if ((cp = matchsym("elsif", keyword)) != NULL)
 		retval = linetype_if2elif(ifeval(&cp));
 	else if ((cp = matchsym("else", keyword)) != NULL)
 		retval = LT_ELSE;
@@ -1195,7 +1196,8 @@ skiphash(void)
 			return (NULL);
 	}
 	cp = skipcomment(tline);
-	if (linestate == LS_START && *cp == '#') {
+	// if (linestate == LS_START && *cp == '#') {
+	if (linestate == LS_START && *cp == '`') {
 		linestate = LS_HASH;
 		return (skipcomment(cp + 1));
 	} else if (*cp == '\0') {
@@ -1259,10 +1261,10 @@ skipcomment(const char *cp)
 			} else if (strncmp(cp, "//", 2) == 0) {
 				incomment = CXX_COMMENT;
 				cp += 2;
-			} else if (strncmp(cp, "\'", 1) == 0) {
-				incomment = CHAR_LITERAL;
-				linestate = LS_DIRTY;
-				cp += 1;
+			// } else if (strncmp(cp, "\'", 1) == 0) {
+			//	incomment = CHAR_LITERAL;
+			// 	linestate = LS_DIRTY;
+			//	cp += 1;
 			} else if (strncmp(cp, "\"", 1) == 0) {
 				incomment = STRING_LITERAL;
 				linestate = LS_DIRTY;
@@ -1286,10 +1288,11 @@ skipcomment(const char *cp)
 			}
 			cp += 1;
 			continue;
-		case CHAR_LITERAL:
+		// case CHAR_LITERAL:
 		case STRING_LITERAL:
-			if ((incomment == CHAR_LITERAL && cp[0] == '\'') ||
-			    (incomment == STRING_LITERAL && cp[0] == '\"')) {
+			// if ((incomment == CHAR_LITERAL && cp[0] == '\'') ||
+			//     (incomment == STRING_LITERAL && cp[0] == '\"')) {
+			if (incomment == STRING_LITERAL && cp[0] == '\"') {
 				incomment = NO_COMMENT;
 				cp += 1;
 			} else if (cp[0] == '\\') {
@@ -1298,9 +1301,9 @@ skipcomment(const char *cp)
 				else
 					cp += 2;
 			} else if (strncmp(cp, "\n", 1) == 0) {
-				if (incomment == CHAR_LITERAL)
-					error("Unterminated char literal");
-				else
+				// if (incomment == CHAR_LITERAL)
+				// 	error("Unterminated char literal");
+				// else
 					error("Unterminated string literal");
 			} else
 				cp += 1;
